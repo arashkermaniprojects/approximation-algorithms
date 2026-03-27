@@ -395,10 +395,10 @@ where C  = algorithm's solution cost/value
 
       <div class="key-concept">
         <div class="kc-title">Why This is a 2-Approximation</div>
-        <b>Lower bound on OPT:</b> Remove any edge from the optimal tour — you get a spanning tree. Since the MST is the <i>minimum</i> spanning tree: <span class="math-inline">cost(MST) &le; cost(OPT)</span>.<br><br>
-        <b>DFS walk:</b> Walking around the MST traverses each edge exactly twice, so the walk costs exactly 2 &times; cost(MST).<br><br>
-        <b>Shortcutting:</b> By the triangle inequality, skipping a visited city never increases the distance. So the final tour costs &le; 2 &times; cost(MST).<br><br>
-        <b>Therefore:</b> cost(tour) &le; 2 &times; cost(MST) &le; 2 &times; cost(OPT).
+        <b>Lower bound:</b> <span class="math-inline">cost(MST) &le; cost(OPT)</span> (as explained above).<br>
+        <b>DFS walk:</b> Traverses each MST edge twice &rarr; cost = 2 &times; cost(MST).<br>
+        <b>Shortcutting:</b> Triangle inequality &rarr; skipping visited cities never increases distance &rarr; tour &le; 2 &times; cost(MST).<br>
+        <b>Therefore:</b> <span class="math-inline">cost(tour) &le; 2 &times; MST &le; 2 &times; OPT</span>.
       </div>
 
       <div class="example-box">
@@ -464,23 +464,19 @@ where C  = algorithm's solution cost/value
 
       <div class="example-box">
         <div class="eb-title">Worked Example — Charge Accounting</div>
-        U = {1,2,3,4,5,6}, S&#8321;={1,2,3}, S&#8322;={2,4,5}, S&#8323;={3,5,6}, S&#8324;={1,6}. Optimal = 2 sets.<br><br>
+        U = {1,2,3,4,5,6}, S&#8321;={1,2,3}, S&#8322;={2,4,5}, S&#8323;={4,5,6}, S&#8324;={1,6}. Optimal = 2 sets (S&#8321; &cup; S&#8323; = U).<br><br>
         <b>Round 1:</b> Greedy picks S&#8321; (covers 3 new elements: {1,2,3}). Charge each element 1/3.<br>
         &emsp; Charges so far: 1&rarr;1/3, 2&rarr;1/3, 3&rarr;1/3<br><br>
-        <b>Round 2:</b> Greedy picks S&#8322; (covers 2 new elements: {4,5}). Charge each 1/2.<br>
-        &emsp; Charges so far: 4&rarr;1/2, 5&rarr;1/2<br><br>
-        <b>Round 3:</b> Greedy picks S&#8323; (covers 1 new element: {6}). Charge it 1/1.<br>
-        &emsp; Charges so far: 6&rarr;1<br><br>
-        <b>Total:</b> 3 sets picked. Maximum charge on any element = 1 (on element 6). Largest set has 3 elements, so H(3) = 1 + 1/2 + 1/3 &asymp; 1.83. The bound says greedy &le; 1.83 &times; 2 = 3.67 sets. We used 3, well within the bound.
+        <b>Round 2:</b> S&#8322; covers 2 new (4,5), S&#8323; covers 3 new (4,5,6), S&#8324; covers 1 new (6). Greedy picks S&#8323; (most new). Charge each 1/3.<br>
+        &emsp; Charges so far: 4&rarr;1/3, 5&rarr;1/3, 6&rarr;1/3<br><br>
+        <b>Total:</b> 2 sets picked = optimal! Maximum charge on any element = 1/3. Largest set has 3 elements, so H(3) = 1 + 1/2 + 1/3 &asymp; 1.83. The bound says greedy &le; 1.83 &times; 2 = 3.67 sets. We used 2, well within the bound.
       </div>
 
       <div class="example-box">
-        <div class="eb-title">Example</div>
-        U = {1,2,3,4,5,6}, S&#8321;={1,2,3}, S&#8322;={2,4,5}, S&#8323;={3,5,6}, S&#8324;={1,6}.<br><br>
-        &bull; Round 1: S&#8321; and S&#8322; and S&#8323; each cover 3 elements. Pick S&#8321;={1,2,3}. Covered: {1,2,3}.<br>
-        &bull; Round 2: S&#8322; covers {4,5} (2 new), S&#8323; covers {5,6} (2 new), S&#8324; covers {6} (1 new). Tie between S&#8322; and S&#8323;. Pick S&#8322;. Covered: {1,2,3,4,5}.<br>
-        &bull; Round 3: S&#8323; covers {6} (1 new), S&#8324; covers {6} (1 new). Pick either. Covered: {1,2,3,4,5,6}. Done!<br><br>
-        Greedy used <b>3 sets</b>. Optimal is 2 sets: {S&#8321;, S&#8323;}. Ratio = 3/2 = 1.5.
+        <div class="eb-title">Example — When Greedy Is Suboptimal</div>
+        See the <b>"Greedy suboptimal"</b> preset in the interactive tool below (10 elements, 5 sets).<br>
+        U = {1,...,10}, S&#8321;={1,2,3,4,5}, S&#8322;={6,7,8,9,10}, S&#8323;={1,2,6,7}, S&#8324;={3,4,8,9}, S&#8325;={5,10,1,6}.<br><br>
+        Optimal: S&#8321; &cup; S&#8322; = U (2 sets). But greedy picks S&#8321; (5 new), then S&#8323; or S&#8324; (each covers only 2 new from the other half), requiring <b>3 sets total</b>. Ratio = 3/2 = 1.5.
       </div>
 
       <!-- SECTION 5.5 — Common Thread -->
@@ -527,10 +523,7 @@ where C  = algorithm's solution cost/value
 
       <div class="key-concept">
         <div class="kc-title">Why Do Greedy Algorithms Give Good Approximations?</div>
-        The power of greedy approximation comes from two ingredients:<br><br>
-        <b>1. A lower bound on OPT:</b> We find something that the optimal solution <i>must</i> pay for. For Vertex Cover it is the matching size, for TSP it is the MST cost, for Set Cover it is the harmonic number analysis.<br><br>
-        <b>2. Bounded greediness:</b> The greedy algorithm's total cost can be directly related to that lower bound. Because each greedy step makes a "reasonable" local choice, the total never drifts too far from optimal.<br><br>
-        This <b>lower-bound + greedy-bound</b> proof pattern is the standard technique for analyzing greedy approximation algorithms, and it appears throughout the study of <b>combinatorial optimization</b> — the branch of mathematics and computer science concerned with finding the best solution from a finite (but typically enormous) set of possibilities.
+        Because each greedy step makes a "reasonable" local choice, the total cost never drifts too far from optimal. This <b>bounded greediness</b> can always be related back to a lower bound on OPT (matching for Vertex Cover, MST for TSP, harmonic analysis for Set Cover) — the same <b>proof pattern</b> introduced in Section 2. This technique is central to <b>combinatorial optimization</b> — the branch of mathematics and computer science concerned with finding the best solution from a finite (but typically enormous) set of possibilities.
       </div>
 
       <!-- SECTION 6 -->
@@ -817,14 +810,14 @@ const SC_PRESETS={
   basic:{
     label:"6 elements, 4 sets",
     universe:[1,2,3,4,5,6],
-    sets:[{name:"S1",elems:[1,2,3]},{name:"S2",elems:[2,4,5]},{name:"S3",elems:[3,5,6]},{name:"S4",elems:[1,6]}],
+    sets:[{name:"S1",elems:[1,2,3]},{name:"S2",elems:[2,4,5]},{name:"S3",elems:[4,5,6]},{name:"S4",elems:[1,6]}],
     optimal:2,optSets:"S1,S3"
   },
   medium:{
     label:"8 elements, 5 sets",
     universe:[1,2,3,4,5,6,7,8],
     sets:[{name:"S1",elems:[1,2,3,8]},{name:"S2",elems:[1,4,5]},{name:"S3",elems:[4,5,7]},{name:"S4",elems:[2,6]},{name:"S5",elems:[3,6,7,8]}],
-    optimal:2,optSets:"S1,S3 or S2,S5"
+    optimal:3,optSets:"S1,S3,S4"
   },
   greedy_wins:{
     label:"Greedy = Optimal",
@@ -890,8 +883,12 @@ function buildVC(){
   let pickedEdges=[];
   let allSteps=[];
 
+  let edgeStr=i=>`(${nodes[edges[i][0]].l},${nodes[edges[i][1]].l})`;
+  let coverStr=()=>[...cover].map(i=>nodes[i].l).join(', ')||'∅';
+  let uncovStr=()=>[...uncovered].map(i=>edgeStr(i)).join(', ')||'∅';
+
   allSteps.push({type:'vc',phase:'init',nodes,edges,cover:new Set(),uncovered:new Set(uncovered),pickedEdges:[],
-    codeLine:0,explain:`Start: graph has ${nodes.length} vertices and ${edges.length} edges. Cover is empty. We need to cover every edge.`});
+    codeLine:0,explain:`Start: graph has ${nodes.length} vertices and ${edges.length} edges.\n→ C = {∅}\n→ E' = {${uncovStr()}}`});
 
   while(uncovered.size>0){
     let eIdx=[...uncovered][0];
@@ -899,7 +896,7 @@ function buildVC(){
 
     allSteps.push({type:'vc',phase:'pick_edge',nodes,edges,cover:new Set(cover),uncovered:new Set(uncovered),
       pickedEdges:[...pickedEdges],pickingEdge:eIdx,
-      codeLine:3,explain:`Pick uncovered edge (${nodes[u].l},${nodes[v].l}). We will add BOTH endpoints to the cover.`});
+      codeLine:3,explain:`Pick uncovered edge (${nodes[u].l},${nodes[v].l}). We will add BOTH endpoints to the cover.\n→ C = {${coverStr()}}\n→ E' = {${uncovStr()}}`});
 
     cover.add(u);cover.add(v);
     pickedEdges.push(eIdx);
@@ -913,11 +910,11 @@ function buildVC(){
 
     allSteps.push({type:'vc',phase:'add_vertices',nodes,edges,cover:new Set(cover),uncovered:new Set(uncovered),
       pickedEdges:[...pickedEdges],addedU:u,addedV:v,removedEdges:removed,
-      codeLine:4,explain:`Add {${nodes[u].l},${nodes[v].l}} to cover. Remove ${removed.length} edge(s) now covered. ${uncovered.size} uncovered edge(s) remain.`});
+      codeLine:4,explain:`Add {${nodes[u].l},${nodes[v].l}} to cover. Removed ${removed.length} edge(s): ${removed.map(i=>edgeStr(i)).join(', ')}.\n→ C = {${coverStr()}}\n→ E' = {${uncovStr()}}\n→ |E'| = ${uncovered.size} uncovered edge(s) remain`});
   }
 
   allSteps.push({type:'vc',phase:'done',nodes,edges,cover:new Set(cover),uncovered:new Set(),pickedEdges:[...pickedEdges],
-    codeLine:6,explain:`Done! Cover = {${[...cover].map(i=>nodes[i].l).join(', ')}} with ${cover.size} vertices. Optimal has ${preset.optimal.length} vertices: ${preset.optLabel}. Ratio = ${cover.size}/${preset.optimal.length} = ${(cover.size/preset.optimal.length).toFixed(2)}.`});
+    codeLine:6,explain:`Done!\n→ C = {${coverStr()}} (size ${cover.size})\n→ E' = {∅} — all edges covered\n→ Optimal: ${preset.optLabel} (size ${preset.optimal.length})\n→ Ratio = ${cover.size}/${preset.optimal.length} = ${(cover.size/preset.optimal.length).toFixed(2)}`});
   return allSteps;
 }
 
@@ -927,8 +924,12 @@ function buildTSP(){
   let n=nodes.length;
   let allSteps=[];
 
+  let cityNames=nodes.map(nd=>nd.l);
+  let mstEdgeStr=(edges)=>edges.map(([a,b])=>`(${nodes[a].l},${nodes[b].l})`).join(', ')||'∅';
+  let notInMST=()=>{let r=[];for(let v=0;v<n;v++) if(!inMST[v]) r.push(nodes[v].l);return r.join(', ')||'∅';};
+
   allSteps.push({type:'tsp',phase:'init',nodes,mstEdges:[],tourOrder:[],finalTour:[],currentEdge:null,
-    codeLine:0,explain:`Start: ${n} cities. Step 1: Build the Minimum Spanning Tree (MST).`});
+    codeLine:0,explain:`Start: ${n} cities: {${cityNames.join(', ')}}. Step 1: Build the Minimum Spanning Tree (MST).\n→ MST edges = {∅}\n→ Vertices not in MST = {${cityNames.join(', ')}}`});
 
   // Build MST step by step
   let inMST=new Array(n).fill(false);
@@ -944,9 +945,10 @@ function buildTSP(){
     if(parent[u]!==-1){
       mstEdges.push([parent[u],u]);
       let d=dist(nodes[parent[u]],nodes[u]).toFixed(1);
+      let runCost=mstEdges.reduce((s,e)=>s+dist(nodes[e[0]],nodes[e[1]]),0);
       allSteps.push({type:'tsp',phase:'mst_add',nodes,mstEdges:[...mstEdges],tourOrder:[],finalTour:[],
         currentEdge:[parent[u],u],
-        codeLine:0,explain:`MST: Add edge (${nodes[parent[u]].l},${nodes[u].l}), weight ${d}. MST has ${mstEdges.length}/${n-1} edges.`});
+        codeLine:0,explain:`MST: Add edge (${nodes[parent[u]].l},${nodes[u].l}), weight ${d}.\n→ MST edges = {${mstEdgeStr(mstEdges)}} (${mstEdges.length}/${n-1})\n→ Running MST cost = ${runCost.toFixed(1)}\n→ Vertices not in MST = {${notInMST()}}`});
     }
     for(let v=0;v<n;v++){
       if(!inMST[v]){let d=dist(nodes[u],nodes[v]);if(d<key[v]){key[v]=d;parent[v]=u;}}
@@ -955,7 +957,7 @@ function buildTSP(){
 
   let mstCost=mstEdges.reduce((s,e)=>s+dist(nodes[e[0]],nodes[e[1]]),0);
   allSteps.push({type:'tsp',phase:'mst_done',nodes,mstEdges:[...mstEdges],tourOrder:[],finalTour:[],
-    codeLine:0,explain:`MST complete! Cost = ${mstCost.toFixed(1)}. Step 2: DFS walk around the MST.`});
+    codeLine:0,explain:`MST complete!\n→ MST edges = {${mstEdgeStr(mstEdges)}}\n→ Total MST cost = ${mstCost.toFixed(1)}\n→ 2 × MST = ${(2*mstCost).toFixed(1)} (upper bound on tour)\nStep 2: DFS walk around the MST.`});
 
   // DFS order
   let adj=Array.from({length:n},()=>[]);
@@ -963,7 +965,7 @@ function buildTSP(){
   let order=dfsOrder(adj,0,n);
 
   allSteps.push({type:'tsp',phase:'dfs',nodes,mstEdges:[...mstEdges],tourOrder:[...order],finalTour:[],
-    codeLine:1,explain:`DFS order: ${order.map(i=>nodes[i].l).join(' → ')}. Step 3: Create Hamiltonian cycle (shortcut repeated visits).`});
+    codeLine:1,explain:`DFS walk from ${nodes[0].l}:\n→ Visit order = ${order.map(i=>nodes[i].l).join(' → ')}\n→ Full DFS walk (with backtracking) traverses each MST edge twice = cost 2 × ${mstCost.toFixed(1)} = ${(2*mstCost).toFixed(1)}\nStep 3: Shortcut repeated visits to form Hamiltonian cycle.`});
 
   // Final tour
   let tour=[...order,order[0]];
@@ -974,14 +976,16 @@ function buildTSP(){
     let partial=tour.slice(0,i+2);
     let partialCost=0;
     for(let j=0;j<partial.length-1;j++) partialCost+=dist(nodes[partial[j]],nodes[partial[j+1]]);
+    let visited=partial.slice(0,-1).map(j=>nodes[j].l);
+    let remaining=cityNames.filter(c=>!visited.includes(c));
     allSteps.push({type:'tsp',phase:'tour_build',nodes,mstEdges:[...mstEdges],tourOrder:[...order],
       finalTour:partial,currentEdge:[tour[i],tour[i+1]],
-      codeLine:2,explain:`Tour: ${partial.map(j=>nodes[j].l).join(' → ')}. Edge (${nodes[tour[i]].l},${nodes[tour[i+1]].l}) = ${dist(nodes[tour[i]],nodes[tour[i+1]]).toFixed(1)}. Running cost: ${partialCost.toFixed(1)}.`});
+      codeLine:2,explain:`Add edge (${nodes[tour[i]].l},${nodes[tour[i+1]].l}), distance = ${dist(nodes[tour[i]],nodes[tour[i+1]]).toFixed(1)}.\n→ Tour so far = ${partial.map(j=>nodes[j].l).join(' → ')}\n→ Running tour cost = ${partialCost.toFixed(1)}\n→ Cities not yet visited = {${remaining.join(', ')||'all visited — returning to start'}}`});
   }
 
   let ratio=(tourCost/mstCost).toFixed(2);
   allSteps.push({type:'tsp',phase:'done',nodes,mstEdges:[...mstEdges],tourOrder:[...order],finalTour:tour,
-    codeLine:2,explain:`Done! Tour: ${tour.map(i=>nodes[i].l).join(' → ')}. Tour cost = ${tourCost.toFixed(1)}. MST cost = ${mstCost.toFixed(1)}. Ratio (tour/MST) = ${ratio}. Guaranteed ≤ 2.0.`});
+    codeLine:2,explain:`Done!\n→ Tour = ${tour.map(i=>nodes[i].l).join(' → ')}\n→ Tour cost = ${tourCost.toFixed(1)}\n→ MST cost = ${mstCost.toFixed(1)}\n→ Ratio (tour / MST) = ${ratio} ≤ 2.0 ✓\n→ 2 × MST = ${(2*mstCost).toFixed(1)}, tour is ${((1-tourCost/(2*mstCost))*100).toFixed(0)}% cheaper than worst case`});
   return allSteps;
 }
 
@@ -993,8 +997,12 @@ function buildSC(){
   let chosen=[];
   let allSteps=[];
 
+  let covStr=()=>[...covered].join(', ')||'∅';
+  let uncovSC=()=>[...universe].filter(e=>!covered.has(e)).join(', ')||'∅';
+  let chosenStr=()=>chosen.map(i=>sets[i].name).join(', ')||'∅';
+
   allSteps.push({type:'sc',phase:'init',universe,sets,covered:new Set(),chosen:[],currentSet:null,newlyCovered:new Set(),
-    codeLine:0,explain:`Start: Universe has ${universe.size} elements. ${sets.length} sets available. Goal: cover everything with fewest sets.`});
+    codeLine:0,explain:`Start: Universe U = {${[...universe].join(', ')}}. ${sets.length} sets available.\n→ covered = {∅}\n→ uncovered = {${[...universe].join(', ')}}\n→ chosen = []`});
 
   while(covered.size<universe.size){
     // Find best set
@@ -1011,12 +1019,12 @@ function buildSC(){
     let evals=[];
     for(let i=0;i<sets.length;i++){
       if(chosen.includes(i))continue;
-      let cnt=0;for(let e of sets[i].elems) if(!covered.has(e)) cnt++;
-      evals.push(`${sets[i].name} covers ${cnt} new`);
+      let cnt=0;let newE=[];for(let e of sets[i].elems) if(!covered.has(e)){cnt++;newE.push(e);}
+      evals.push(`${sets[i].name}: ${cnt} new {${newE.join(',')}}`);
     }
     allSteps.push({type:'sc',phase:'evaluate',universe,sets,covered:new Set(covered),chosen:[...chosen],
       currentSet:bestIdx,newlyCovered:new Set(),
-      codeLine:2,explain:`Evaluate: ${evals.join(', ')}. Best: ${sets[bestIdx].name} (${bestCount} new elements).`});
+      codeLine:2,explain:`Evaluate remaining sets:\n${evals.map(e=>'→ '+e).join('\n')}\n→ Best: ${sets[bestIdx].name} (${bestCount} new elements)\n→ covered = {${covStr()}}\n→ uncovered = {${uncovSC()}}`});
 
     let newCov=new Set();
     for(let e of sets[bestIdx].elems) if(!covered.has(e)){covered.add(e);newCov.add(e);}
@@ -1024,11 +1032,11 @@ function buildSC(){
 
     allSteps.push({type:'sc',phase:'pick',universe,sets,covered:new Set(covered),chosen:[...chosen],
       currentSet:bestIdx,newlyCovered:newCov,
-      codeLine:3,explain:`Pick ${sets[bestIdx].name}! Newly covered: {${[...newCov].join(',')}}. Total covered: ${covered.size}/${universe.size}.`});
+      codeLine:3,explain:`Pick ${sets[bestIdx].name}! Newly covered: {${[...newCov].join(', ')}}.\n→ covered = {${covStr()}} (${covered.size}/${universe.size})\n→ uncovered = {${uncovSC()}}\n→ chosen = [${chosenStr()}]`});
   }
 
   allSteps.push({type:'sc',phase:'done',universe,sets,covered:new Set(covered),chosen:[...chosen],currentSet:null,newlyCovered:new Set(),
-    codeLine:5,explain:`Done! Used ${chosen.length} set(s): ${chosen.map(i=>sets[i].name).join(', ')}. Optimal: ${preset.optimal} set(s) (${preset.optSets}). Ratio = ${chosen.length}/${preset.optimal} = ${(chosen.length/preset.optimal).toFixed(2)}.`});
+    codeLine:5,explain:`Done!\n→ chosen = [${chosenStr()}] (${chosen.length} sets)\n→ covered = {${covStr()}} — all elements covered\n→ Optimal: ${preset.optimal} set(s) (${preset.optSets})\n→ Ratio = ${chosen.length}/${preset.optimal} = ${(chosen.length/preset.optimal).toFixed(2)}`});
   return allSteps;
 }
 
@@ -1315,14 +1323,15 @@ function renderStep(idx){
   else if(algo==='vc'){pb.classList.add('phase-vc');$('phaseTitle').textContent=step.phase==='pick_edge'?'Picking Edge':step.phase==='add_vertices'?'Adding to Cover':'Vertex Cover';}
   else if(algo==='tsp'){pb.classList.add('phase-tsp');$('phaseTitle').textContent=step.phase.startsWith('mst')?'Building MST':step.phase==='dfs'?'DFS Walk':'Building Tour';}
   else if(algo==='sc'){pb.classList.add('phase-sc');$('phaseTitle').textContent=step.phase==='evaluate'?'Evaluating Sets':step.phase==='pick'?'Picking Best Set':'Set Cover';}
-  $('phaseNote').textContent=step.explain||'';
+  let explainHtml=(step.explain||'').replace(/\n/g,'<br>');
+  $('phaseNote').innerHTML=explainHtml;
 
   renderPseudocode(algo,step.codeLine);
   if(algo==='vc') renderVC(step);
   else if(algo==='tsp') renderTSP(step);
   else if(algo==='sc') renderSC(step);
 
-  $('codeHelp').innerHTML=`<b>Step ${idx+1}/${steps.length}:</b> ${step.explain}`;
+  $('codeHelp').innerHTML=`<b>Step ${idx+1}/${steps.length}:</b><br>${explainHtml}`;
   $('codeHelp').classList.add('highlight-explain');
   setTimeout(()=>$('codeHelp').classList.remove('highlight-explain'),400);
   $('stepCount').textContent=`${idx+1} / ${steps.length}`;
